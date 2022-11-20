@@ -7,6 +7,10 @@ import divFactory from '../components/Div';
 import { IGeneralConstructor, IRenderComponent, IRendererProps, IRendererState } from '../types';
 import { RootSchema } from '@alilc/lowcode-types';
 
+/**
+ * 渲染器工厂函数
+ * @returns
+ */
 export default function rendererFactory(): IRenderComponent {
   const runtime = adapter.getRuntime();
   const Component = runtime.Component as IGeneralConstructor<IRendererProps, Record<string, any>>;

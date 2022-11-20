@@ -30,7 +30,8 @@ export const DEFAULT_LINK_AFTER = {
   [COMMON_CHUNK_NAME.ExternalDepsImport]: [],
   [COMMON_CHUNK_NAME.InternalDepsImport]: [COMMON_CHUNK_NAME.ExternalDepsImport],
   [COMMON_CHUNK_NAME.ImportAliasDefine]: [
-    COMMON_CHUNK_NAME.ExternalDepsImport, COMMON_CHUNK_NAME.InternalDepsImport,
+    COMMON_CHUNK_NAME.ExternalDepsImport,
+    COMMON_CHUNK_NAME.InternalDepsImport,
   ],
   [COMMON_CHUNK_NAME.FileVarDefine]: [
     COMMON_CHUNK_NAME.ExternalDepsImport,
@@ -64,7 +65,8 @@ export const DEFAULT_LINK_AFTER = {
   ],
   [CLASS_DEFINE_CHUNK_NAME.StaticVar]: [CLASS_DEFINE_CHUNK_NAME.Start],
   [CLASS_DEFINE_CHUNK_NAME.StaticMethod]: [
-    CLASS_DEFINE_CHUNK_NAME.Start, CLASS_DEFINE_CHUNK_NAME.StaticVar,
+    CLASS_DEFINE_CHUNK_NAME.Start,
+    CLASS_DEFINE_CHUNK_NAME.StaticVar,
   ],
   [CLASS_DEFINE_CHUNK_NAME.InsVar]: [
     CLASS_DEFINE_CHUNK_NAME.Start,

@@ -6,11 +6,13 @@ import * as changeCase from 'change-case';
 import { getErrorMessage } from '../utils/errors';
 import { getLowcodeSolutionTemplateFiles } from './solutions/example-solution';
 
-
-export async function initSolution(args: string[], options: {
-  quiet?: boolean;
-  verbose?: boolean;
-}) {
+export async function initSolution(
+  args: string[],
+  options: {
+    quiet?: boolean;
+    verbose?: boolean;
+  },
+) {
   try {
     const cwd = process.cwd();
     let solutionName = args[0] || 'hello';
@@ -36,7 +38,9 @@ export async function initSolution(args: string[], options: {
 
       const templateFilePath = path.join(solutionPath, templateFile.file);
       await ensureDirExists(path.dirname(templateFilePath));
-      await fs.writeFile(templateFilePath, modifyFileContent(templateFile.content), { encoding: 'utf-8' });
+      await fs.writeFile(templateFilePath, modifyFileContent(templateFile.content), {
+        encoding: 'utf-8',
+      });
     }
 
     if (!options.quiet) {
@@ -58,7 +62,7 @@ async function ensureDirExists(dirPath: string) {
     await fs.mkdir(dirPath, { recursive: true });
   } catch (e) {
     if ((e as { code: string }).code === 'EEXIST') {
-      return;// ignore existing error
+      return; // ignore existing error
     }
     throw e;
   }

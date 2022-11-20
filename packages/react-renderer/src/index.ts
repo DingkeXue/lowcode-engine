@@ -35,6 +35,7 @@ adapter.setRenderers({
 
 adapter.setConfigProvider(ConfigProvider);
 
+// 渲染器工厂函数。
 function factory(): types.IRenderComponent {
   const Renderer = rendererFactory();
   return class ReactRenderer extends Renderer implements Component {
@@ -63,4 +64,5 @@ function factory(): types.IRenderComponent {
   };
 }
 
+// 返回渲染器实例
 export default factory();
