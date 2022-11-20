@@ -1,6 +1,14 @@
 import React, { Component } from 'react';
 import { Tab, Breadcrumb } from '@alifd/next';
-import { Title, observer, Editor, obx, globalContext, engineConfig, makeObservable } from '@alilc/lowcode-editor-core';
+import {
+  Title,
+  observer,
+  Editor,
+  obx,
+  globalContext,
+  engineConfig,
+  makeObservable,
+} from '@alilc/lowcode-editor-core';
 import { Node, isSettingField, SettingField, Designer } from '@alilc/lowcode-designer';
 import classNames from 'classnames';
 import { SettingsMain } from './main';
@@ -10,7 +18,10 @@ import { SkeletonContext } from '../../context';
 import { createIcon } from '@alilc/lowcode-utils';
 
 @observer
-export class SettingsPrimaryPane extends Component<{ editor: Editor; config: any }, { shouldIgnoreRoot: boolean }> {
+export class SettingsPrimaryPane extends Component<
+  { editor: Editor; config: any },
+  { shouldIgnoreRoot: boolean }
+> {
   state = {
     shouldIgnoreRoot: false,
   };
@@ -86,27 +97,29 @@ export class SettingsPrimaryPane extends Component<{ editor: Editor; config: any
         l === 2
           ? {}
           : {
-            onMouseOver: hoverNode.bind(null, _node, true),
-            onMouseOut: hoverNode.bind(null, _node, false),
-            onClick: () => {
-              if (!_node) {
-                return;
-              }
-              selectNode.call(null, _node);
-              const getName = (node: any) => {
-                const npm = node?.componentMeta?.npm;
-                return [npm?.package, npm?.componentName].filter((item) => !!item).join('-') ||
-                  node?.componentMeta?.componentName ||
-                  '';
-              };
-              const selected = getName(current);
-              const target = getName(_node);
-              editor?.emit('skeleton.settingsPane.Breadcrumb', {
-                selected,
-                target,
-              });
-            },
-          };
+              onMouseOver: hoverNode.bind(null, _node, true),
+              onMouseOut: hoverNode.bind(null, _node, false),
+              onClick: () => {
+                if (!_node) {
+                  return;
+                }
+                selectNode.call(null, _node);
+                const getName = (node: any) => {
+                  const npm = node?.componentMeta?.npm;
+                  return (
+                    [npm?.package, npm?.componentName].filter((item) => !!item).join('-') ||
+                    node?.componentMeta?.componentName ||
+                    ''
+                  );
+                };
+                const selected = getName(current);
+                const target = getName(_node);
+                editor?.emit('skeleton.settingsPane.Breadcrumb', {
+                  selected,
+                  target,
+                });
+              },
+            };
       items.unshift(
         <Breadcrumb.Item {...props} key={node.id}>
           <Title title={node.title} />
@@ -195,6 +208,10 @@ export class SettingsPrimaryPane extends Component<{ editor: Editor; config: any
     }
 
     let matched = false;
+    console.log(
+      '🚀 ~ file: settings-primary-pane.tsx ~ line 198 ~ SettingsPrimaryPane ~ render ~ matched',
+      items,
+    );
     const tabs = (items as SettingField[]).map((field) => {
       if (this._activeKey === field.name) {
         matched = true;
@@ -204,14 +221,12 @@ export class SettingsPrimaryPane extends Component<{ editor: Editor; config: any
           className="lc-settings-tab-item"
           title={<Title title={field.title} />}
           key={field.name}
-          onClick={
-            () => {
-              editor?.emit('skeleton.settingsPane.change', {
-                name: field.name,
-                title: field.title,
-              });
-            }
-          }
+          onClick={() => {
+            editor?.emit('skeleton.settingsPane.change', {
+              name: field.name,
+              title: field.title,
+            });
+          }}
         >
           <SkeletonContext.Consumer>
             {(skeleton) => {
@@ -236,7 +251,7 @@ export class SettingsPrimaryPane extends Component<{ editor: Editor; config: any
     });
     return (
       <div className={className}>
-        { this.renderBreadcrumb() }
+        {this.renderBreadcrumb()}
         <Tab
           activeKey={activeKey}
           onChange={(tabKey) => {

@@ -106,6 +106,8 @@ export default class LeftFloatPane extends Component<{ area: Area<any, Panel> }>
     const style = width ? {
       width,
     } : undefined;
+
+    // 根据area.visible的值决定是否渲染pane(通过observer监听area的值)
     return (
       <div
         ref={(ref) => { this.shell = ref; }}

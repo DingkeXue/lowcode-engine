@@ -60,7 +60,9 @@ export class Skeleton {
   readonly stages: Area<StageConfig, Stage>;
 
   constructor(readonly editor: Editor) {
+    // 监听该对象
     makeObservable(this);
+    // 实例初始化页面中的每个区域
     this.leftArea = new Area(
       this,
       'leftArea',
@@ -158,12 +160,13 @@ export class Skeleton {
       return new Stage(this, config);
     });
 
+    // 初始化插件和事件
     this.setupPlugins();
     this.setupEvents();
   }
   /**
    * setup events
-   *
+   * 在editor上注册show事件
    * @memberof Skeleton
    */
   setupEvents() {
@@ -209,6 +212,10 @@ export class Skeleton {
     this.setupPlugins();
   }
 
+  /**
+   * 根据editor的默认config数据注册插件（根据对应区域进行注册）
+   * @returns 
+   */
   private setupPlugins() {
     const { config, components = {} } = this.editor;
     if (!config) {
@@ -255,6 +262,7 @@ export class Skeleton {
     });
   }
 
+  /** 触发事件 */
   postEvent(event: SkeletonEvents, ...args: any[]) {
     this.editor.emit(event, ...args);
   }

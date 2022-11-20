@@ -109,6 +109,7 @@ export class Designer {
     });
 
     this.dragon.onDrag((e) => {
+      console.log(211111222);
       if (this.props?.onDrag) {
         this.props.onDrag(e);
       }

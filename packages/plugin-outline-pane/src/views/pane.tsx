@@ -17,6 +17,7 @@ export class OutlinePane extends Component<{ config: any; editor: IEditor }> {
 
   render() {
     const tree = this.main.currentTree;
+    console.log(9999, tree);
 
     if (!tree) {
       return (

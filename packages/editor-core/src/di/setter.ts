@@ -2,7 +2,7 @@ import { ReactNode } from 'react';
 import { CustomView, isCustomView, TitleContent } from '@alilc/lowcode-types';
 import { createContent } from '@alilc/lowcode-utils';
 
-export type RegisteredSetter = {
+export interface RegisteredSetter {
   component: CustomView;
   defaultProps?: object;
   title?: TitleContent;
@@ -17,16 +17,23 @@ export type RegisteredSetter = {
   recommend?: boolean;
   // 标识是否为动态setter，默认为true
   isDynamic?: boolean;
-};
+}
 const settersMap = new Map<string, RegisteredSetter & {
   type: string;
 }>();
+
+/**
+ * 注册setter
+ * @param typeOrMaps
+ * @param setter
+ * @returns
+ */
 export function registerSetter(
   typeOrMaps: string | { [key: string]: CustomView | RegisteredSetter },
   setter?: CustomView | RegisteredSetter,
 ) {
   if (typeof typeOrMaps === 'object') {
-    Object.keys(typeOrMaps).forEach(type => {
+    Object.keys(typeOrMaps).forEach((type) => {
       registerSetter(type, typeOrMaps[type]);
     });
     return;
@@ -34,6 +41,7 @@ export function registerSetter(
   if (!setter) {
     return;
   }
+  // 判断是否是自定义设置器 判断：obj && (isValidElement(obj) || isReactComponent(obj))
   if (isCustomView(setter)) {
     setter = {
       component: setter,
@@ -41,6 +49,7 @@ export function registerSetter(
       title: (setter as any).displayName || (setter as any).name || 'CustomSetter',
     };
   }
+  // 初始值
   if (!setter.initialValue) {
     const initial = getInitialFromSetter(setter.component);
     if (initial) {
@@ -49,14 +58,15 @@ export function registerSetter(
       };
     }
   }
+  // 注册到settersMap上
   settersMap.set(typeOrMaps, { type: typeOrMaps, ...setter });
 }
 
 function getInitialFromSetter(setter: any) {
   return setter && (
     setter.initial || setter.Initial
-      || (setter.type && (setter.type.initial || setter.type.Initial))
-    ) || null; // eslint-disable-line
+    || (setter.type && (setter.type.initial || setter.type.Initial))
+  ) || null; // eslint-disable-line
 }
 
 export function getSetter(type: string): RegisteredSetter | null {

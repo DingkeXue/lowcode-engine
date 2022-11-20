@@ -46,10 +46,10 @@ export class LowCodePluginManager implements ILowCodePluginManager {
   }
 
   /**
-   * register a plugin
-   * @param pluginConfigCreator - a creator function which returns the plugin config
-   * @param options - the plugin options
-   * @param registerOptions - the plugin register options
+   * 注册新的插件
+   * @param pluginConfigCreator - 返回插件配置项的函数
+   * @param options - the plugin options 插件配置项
+   * @param registerOptions - the plugin register options 插件注册器配置
    */
   async register(
     pluginConfigCreator: (ctx: ILowCodePluginContext, options: any) => ILowCodePluginConfig,
@@ -57,6 +57,7 @@ export class LowCodePluginManager implements ILowCodePluginManager {
     registerOptions?: ILowCodeRegisterOptions,
   ): Promise<void> {
     // registerOptions maybe in the second place
+    // 校验传入的 options 参数
     if (isLowCodeRegisterOptions(options)) {
       registerOptions = options;
       options = {};
@@ -65,6 +66,7 @@ export class LowCodePluginManager implements ILowCodePluginManager {
     const { preferenceDeclaration, engines } = meta as ILowCodePluginConfigMeta;
     const ctx = this._getLowCodePluginContext({ pluginName });
     const customFilterValidOptions = engineConfig.get('customPluginFilterOptions', filterValidOptions);
+    // 执行 pluginConfigCreator 函数，返回配置项（将ctx传入到函数中，这样在函数中可以直接修改ctx的值）
     const config = pluginConfigCreator(ctx, customFilterValidOptions(options, preferenceDeclaration!));
     // compat the legacy way to declare pluginName
     // @ts-ignore
@@ -79,6 +81,7 @@ export class LowCodePluginManager implements ILowCodePluginManager {
 
     const allowOverride = registerOptions?.override === true;
 
+    // 处理已存在的情况
     if (this.pluginsMap.has(pluginName)) {
       if (!allowOverride) {
         throw new Error(`Plugin with name ${pluginName} exists`);
@@ -101,11 +104,14 @@ export class LowCodePluginManager implements ILowCodePluginManager {
       throw new Error(`plugin ${pluginName} skipped, engine check failed, current engine version is ${engineConfig.get('ENGINE_VERSION')}, meta.engines.lowcodeEngine is ${engineVersionExp}`);
     }
 
+    // 创建一个新的插件实例
     const plugin = new LowCodePlugin(pluginName, this, config, meta);
     // support initialization of those plugins which registered after normal initialization by plugin-manager
+    // 支持插件自动初始化（即自动调用插件的init方法）
     if (registerOptions?.autoInit) {
       await plugin.init();
     }
+    // 把它加入到plugins数组中
     this.plugins.push(plugin);
     this.pluginsMap.set(pluginName, plugin);
     logger.log(`plugin registered with pluginName: ${pluginName}, config: ${config}, meta: ${meta}`);
@@ -133,6 +139,7 @@ export class LowCodePluginManager implements ILowCodePluginManager {
     return this.pluginsMap.delete(pluginName);
   }
 
+  // 依次初始化插件
   async init(pluginPreference?: PluginPreference) {
     const pluginNames: string[] = [];
     const pluginObj: { [name: string]: ILowCodePlugin } = {};
@@ -141,6 +148,7 @@ export class LowCodePluginManager implements ILowCodePluginManager {
       pluginNames.push(plugin.name);
       pluginObj[plugin.name] = plugin;
     });
+    // 序列化插件名与其内容，如果不能一一对应，插件列表会清空不让注册。
     const { missingTasks, sequence } = sequencify(pluginObj, pluginNames);
     invariant(!missingTasks.length, 'plugin dependency missing', missingTasks);
     logger.log('load plugin sequence:', sequence);
@@ -174,6 +182,7 @@ export class LowCodePluginManager implements ILowCodePluginManager {
     return this.pluginPreference.get(pluginName);
   }
 
+  // 转成proxy
   toProxy() {
     return new Proxy(this, {
       get(target, prop, receiver) {

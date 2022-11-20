@@ -155,6 +155,10 @@ export class DraggableLineView extends Component<{ panel: Panel }> {
   }
 }
 
+/**
+ * 点击 左侧大纲树、组件库、数据源、JS代码、Schema导航对应的面板
+ * 通过 panel.visible 来控制是否展示
+ */
 @observer
 export class TitledPanelView extends Component<{ panel: Panel; area?: string }> {
   componentDidMount() {

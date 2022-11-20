@@ -28,6 +28,7 @@ export default function (tasks, names) {
 
   sequence(tasks, names, results, missing, recursive, []);
 
+  // 如果存在插件名与插件对象对不上的情况，直接清空插件列表，避免潜在的问题
   if (missing.length || recursive.length) {
     results = []; // results are incomplete at best, completely wrong at worst, remove them to avoid confusion
   }

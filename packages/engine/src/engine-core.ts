@@ -32,21 +32,25 @@ export * from './modules/lowcode-types';
 
 registerDefaults();
 
+// 暂时还不知道editor是干什么的（单例模式）
 const editor = new Editor();
 globalContext.register(editor, Editor);
 globalContext.register(editor, 'editor');
 
+// 根据传入的editor创建 Skeleton 的实例对象（初始化页面中各个区域）
 const innerSkeleton = new InnerSkeleton(editor);
 editor.set('skeleton' as any, innerSkeleton);
 
 const designer = new Designer({ editor });
 editor.set('designer' as any, designer);
 
+// 插件管理器，会被导出在外面项目中使用（lowcode-demo）。
 const plugins = new LowCodePluginManager(editor).toProxy();
 editor.set('plugins' as any, plugins);
 
 const { project: innerProject } = designer;
 const skeletonCabin = getSkeletonCabin(innerSkeleton);
+// 这里的 Workbench 是函数式组件
 const { Workbench } = skeletonCabin;
 
 const hotkey = new Hotkey();
@@ -187,6 +191,13 @@ let engineInited = false;
 // @ts-ignore webpack Define variable
 export const version = VERSION_PLACEHOLDER;
 engineConfig.set('ENGINE_VERSION', version);
+/**
+ * 初始化工作，挂载页面、注册插件、渲染页面
+ * @param container 挂载的容器
+ * @param options 配置项
+ * @param pluginPreference 插件预配置
+ * @returns 
+ */
 export async function init(
   container?: HTMLElement,
   options?: EngineOptions,
@@ -211,6 +222,7 @@ export async function init(
   engineContainer.id = 'engine';
   engineConfig.setEngineOptions(engineOptions as any);
 
+  // 依次调用 plugins 数组里的插件进行初始化（packages/designer/src/plugin/plugin-manager.ts/init()）
   await plugins.init(pluginPreference as any);
   render(
     createElement(Workbench, {

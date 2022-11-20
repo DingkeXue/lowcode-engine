@@ -1,3 +1,4 @@
+/** 右侧属性面板内容 */
 import { Component, Fragment } from 'react';
 import classNames from 'classnames';
 import { observer } from '@alilc/lowcode-editor-core';
