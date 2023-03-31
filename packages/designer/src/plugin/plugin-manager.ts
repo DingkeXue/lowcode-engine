@@ -22,6 +22,9 @@ import semverSatisfies from 'semver/functions/satisfies';
 
 const logger = getLogger({ level: 'warn', bizName: 'designer:pluginManager' });
 
+/**
+ * 引擎的插件管理类，主要负责：1.注册插件 2.执行插件
+ */
 export class LowCodePluginManager implements ILowCodePluginManager {
   private plugins: ILowCodePlugin[] = [];
 
@@ -34,6 +37,11 @@ export class LowCodePluginManager implements ILowCodePluginManager {
     this.editor = editor;
   }
 
+  /**
+   * 获取当前插件的ctx。该ctx上面的属性（如config,project,skeleton）是this.editor对应属性的值
+   * @param options 插件的配置想
+   * @returns ctx
+   */
   private _getLowCodePluginContext(options: IPluginContextOptions) {
     return new LowCodePluginContext(this, options);
   }
@@ -47,6 +55,11 @@ export class LowCodePluginManager implements ILowCodePluginManager {
 
   /**
    * 注册新的插件
+   * 1. 处理入参
+   * 2. 获取插件ctx实例对象并作为入参传入pluginConfigCreator函数中
+   * 3. 处理插件重名的情况（如果配置没有override，直接报错，否则，卸载旧的）
+   * 4. 根据当前插件配置实例化插件对象
+   * 5. 将新的插件实例加入到plugins、pluginsMap中
    * @param pluginConfigCreator - 返回插件配置项的函数
    * @param options - the plugin options 插件配置项
    * @param registerOptions - the plugin register options 插件注册器配置
@@ -57,16 +70,18 @@ export class LowCodePluginManager implements ILowCodePluginManager {
     registerOptions?: ILowCodeRegisterOptions,
   ): Promise<void> {
     // registerOptions maybe in the second place
-    // 校验传入的 options 参数
+    // 校验传入的 options 参数，如果参数中有autoInit｜override，则为registerOptions属性
     if (isLowCodeRegisterOptions(options)) {
       registerOptions = options;
       options = {};
     }
+    // 获取插件名字和meta属性
     let { pluginName, meta = {} } = pluginConfigCreator as any;
     const { preferenceDeclaration, engines } = meta as ILowCodePluginConfigMeta;
+    // 获取插件上下文实例对象
     const ctx = this._getLowCodePluginContext({ pluginName });
     const customFilterValidOptions = engineConfig.get('customPluginFilterOptions', filterValidOptions);
-    // 执行 pluginConfigCreator 函数，返回配置项（将ctx传入到函数中，这样在函数中可以直接修改ctx的值）
+    // 执行 pluginConfigCreator 函数，返回配置项（将ctx传入到函数中，这样在函数中可以直接获取、修改ctx的值）
     const config = pluginConfigCreator(ctx, customFilterValidOptions(options, preferenceDeclaration!));
     // compat the legacy way to declare pluginName
     // @ts-ignore
@@ -81,7 +96,7 @@ export class LowCodePluginManager implements ILowCodePluginManager {
 
     const allowOverride = registerOptions?.override === true;
 
-    // 处理已存在的情况
+    // 处理已存在的情况，如果插件override为true，则卸载原插件，注册新插件；否则，直接报错
     if (this.pluginsMap.has(pluginName)) {
       if (!allowOverride) {
         throw new Error(`Plugin with name ${pluginName} exists`);
@@ -139,7 +154,12 @@ export class LowCodePluginManager implements ILowCodePluginManager {
     return this.pluginsMap.delete(pluginName);
   }
 
-  // 依次初始化插件
+  /**
+   * 依次初始化插件（执行时机是在engine初始化的过程中，即执行engine.init方法内）
+   * 1. 序列化插件名与其内容
+   * 2. 串行执行插件（执行plugin.init()方法）
+   * @param pluginPreference
+   */
   async init(pluginPreference?: PluginPreference) {
     const pluginNames: string[] = [];
     const pluginObj: { [name: string]: ILowCodePlugin } = {};

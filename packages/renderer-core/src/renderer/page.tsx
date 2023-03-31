@@ -14,10 +14,13 @@ export default function pageRendererFactory(): IBaseRenderComponent {
       });
       const schema = props.__schema || {};
       this.state = this.__parseData(schema.state || {});
+      // 初始化数据源
       this.__initDataSource(props);
+      // 执行constructor构造函数
       this.__excuteLifeCycleMethod('constructor', [props, ...rest]);
     }
 
+    // didupdate的时候去更新state值
     async componentDidUpdate(prevProps: IBaseRendererProps, _prevState: {}, snapshot: unknown) {
       const { __ctx } = this.props;
       const prevState = this.__parseData(prevProps.__schema.state, __ctx);
@@ -45,9 +48,12 @@ export default function pageRendererFactory(): IBaseRenderComponent {
       this.__generateCtx({
         page: this,
       });
+      // 执行BaseRenderer的render函数
+      // 1.执行render生命周期 2.注入css样式 3.重新加载数据源
       this.__render();
 
 
+      // 生成组件，渲染页面
       const { Page } = __components;
       if (Page) {
         return this.__renderComp(Page, { pageContext: this });

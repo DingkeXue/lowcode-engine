@@ -57,6 +57,7 @@ export default function addonRendererFactory(): IBaseRenderComponent {
       }
     }
 
+    // 获取工具对象
     get utils() {
       const { utils = {} } = this.context.config || {};
       return { ...this.appHelper.utils, ...utils };

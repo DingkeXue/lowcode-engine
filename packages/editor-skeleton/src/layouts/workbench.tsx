@@ -14,6 +14,9 @@ import './workbench.less';
 import { SkeletonContext } from '../context';
 import { EditorConfig, PluginClassSet } from '@alilc/lowcode-types';
 
+/**
+ * skeleton的布局结构
+ */
 @observer
 export class Workbench extends Component<{
   skeleton: Skeleton;

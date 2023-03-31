@@ -25,6 +25,7 @@ class Contents extends Component<{ area: Area; itemClassName?: string }> {
     const left: any[] = [];
     const center: any[] = [];
     const right: any[] = [];
+    // 对注册的widget进行排序
     area.container.items.slice().sort((a, b) => {
       const index1 = a.config?.index || 0;
       const index2 = b.config?.index || 0;
@@ -35,6 +36,7 @@ class Contents extends Component<{ area: Area; itemClassName?: string }> {
           {item.content}
         </div>
       );
+      // 根据注册的位置，放到对应的数组中
       if (item.align === 'center') {
         center.push(content);
       } else if (item.align === 'left') {

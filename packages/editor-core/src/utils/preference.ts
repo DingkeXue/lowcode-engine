@@ -7,7 +7,7 @@ const STORAGE_KEY_PREFIX = 'ale';
 /**
  * used to store user preferences, such as pinned status of a pannel.
  * save to local storage.
- *
+ * 用于设置用户习惯数据，存储在localstorage上
  * @class PreferenceStore
  */
 export default class Preference {
@@ -16,6 +16,13 @@ export default class Preference {
     return `${STORAGE_KEY_PREFIX}_${moduleKey}.${key}`;
   }
 
+  /**
+   * 设置值
+   * @param key 字段名
+   * @param value 值
+   * @param module 空间（namespace）
+   * @returns
+   */
   set(key: string, value: any, module?: string) {
     if (!key || typeof key !== 'string' || key.length === 0) {
       logger.error('Invalid key when setting preference', key);
@@ -26,6 +33,12 @@ export default class Preference {
     store.set(storageKey, value);
   }
 
+  /**
+   * 根据key获取值
+   * @param key
+   * @param module
+   * @returns
+   */
   get(key: string, module: string): any {
     if (!key || typeof key !== 'string' || key.length === 0) {
       logger.error('Invalid key when getting from preference', key);
@@ -38,7 +51,7 @@ export default class Preference {
   }
   /**
    * check if local storage contain certain key
-   *
+   * 判断当前key是否在local storage里
    * @param {string} key
    * @param {string} module
    * @returns {boolean}

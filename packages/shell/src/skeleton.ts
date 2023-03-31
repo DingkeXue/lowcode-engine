@@ -6,6 +6,9 @@ import {
 } from '@alilc/lowcode-editor-skeleton';
 import { skeletonSymbol } from './symbols';
 
+/**
+ * 管理Skeleton的类，在真实的Skeleton对象上再抽象一层
+ */
 export default class Skeleton {
   private readonly [skeletonSymbol]: InnerSkeleton;
 

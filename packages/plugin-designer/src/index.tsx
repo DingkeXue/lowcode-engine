@@ -22,6 +22,11 @@ interface DesignerPluginState {
   requestHandlersMap: any;
 }
 
+/**
+ * DesignerPlugin 设计器插件，主要作用：
+ * 1. 获取assets资源并进行渲染判断（如果没有资产包就渲染null）
+ * 2. 封装好模拟器需要的参数
+ */
 export default class DesignerPlugin extends PureComponent<PluginProps, DesignerPluginState> {
   static displayName: 'LowcodePluginDesigner';
 

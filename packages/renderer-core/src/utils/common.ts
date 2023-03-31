@@ -31,6 +31,7 @@ const EXPRESSION_TYPE = {
 
 /**
  * check if schema passed in is a valid schema
+ * 检查schema是否符合规范
  * @name isSchema
  * @returns boolean
  */

@@ -219,7 +219,8 @@ export class Dragon {
 
   /**
    * Quick listen a shell(container element) drag behavior
-   * @param shell container element
+   * 监听拖拽对象的鼠标点击事件（在物料面板中注册的from事件 registerAdditive）
+   * @param shell container element 监听的元素
    * @param boost boost got a drag object
    */
   from(shell: Element, boost: (e: MouseEvent) => DragObject | null) {
@@ -230,11 +231,13 @@ export class Dragon {
       }
 
       // Get a new node to be dragged
+      // 获取被拖拽元素的节点
       const dragObject = boost(e);
       if (!dragObject) {
         return;
       }
 
+      //
       this.boost(dragObject, e);
     };
     shell.addEventListener('mousedown', mousedown as any);

@@ -73,11 +73,13 @@ class Toolbar extends Component<{ observed: OffsetObserver }> {
     let style: any;
     // 计算 toolbar 的上/下位置
     if (observed.top > SPACE_HEIGHT) {
+      // 元素的顶部位置大于Toolbar高度
       style = {
         top: -SPACE_HEIGHT,
         height: BAR_HEIGHT,
       };
     } else if (observed.bottom + SPACE_HEIGHT < height) {
+      // 元素的底部位置大于Toolbar高度
       style = {
         bottom: -SPACE_HEIGHT,
         height: BAR_HEIGHT,
@@ -90,8 +92,10 @@ class Toolbar extends Component<{ observed: OffsetObserver }> {
     }
     // 计算 toolbar 的左/右位置
     if (SPACE_MINIMUM_WIDTH > observed.left + observed.width) {
+      // 左侧放置
       style.left = Math.max(-BORDER, observed.left - width - BORDER);
     } else {
+      // 右侧放置
       style.right = Math.max(-BORDER, observed.right - width - BORDER);
       style.justifyContent = 'flex-start';
     }

@@ -186,13 +186,14 @@ export class Skeleton {
 
   /**
    * set isFloat status for panel
-   *
+   * 切换panel浮动、固定状态
    * @param {*} panel
    * @memberof Skeleton
    */
   @action
   toggleFloatStatus(panel: Panel) {
     const isFloat = panel?.parent?.name === 'leftFloatArea';
+    // 如果当前是浮动状态，改成固定状态，否则，反之；
     if (isFloat) {
       this.leftFloatArea.remove(panel);
       this.leftFixedArea.add(panel);
@@ -202,6 +203,7 @@ export class Skeleton {
       this.leftFloatArea.add(panel);
       this.leftFloatArea.container.active(panel);
     }
+    // 将当前插件的状态保存下来
     this.editor?.getPreference()?.set(`${panel.name}-pinned-status-isFloat`, !isFloat, 'skeleton');
   }
 
@@ -269,6 +271,11 @@ export class Skeleton {
 
   readonly widgets: IWidget[] = [];
 
+  /**
+   * 根据config配置创建对应的widget，并加到widgets数组中
+   * @param config widget的配置
+   * @returns widget实例
+   */
   createWidget(config: IWidgetBaseConfig | IWidget) {
     if (isWidget(config)) {
       return config;
@@ -366,12 +373,19 @@ export class Skeleton {
     return restConfig;
   }
 
+  /**
+   * 注册新的模块（paneldock、widget、dock）
+   * @param config 配置项
+   * @param extraConfig 扩展配置
+   * @returns void
+   */
   add(config: IWidgetBaseConfig, extraConfig?: Record<string, any>) {
     const parsedConfig = {
       ...this.parseConfig(config),
       ...extraConfig,
     };
     let { area } = parsedConfig;
+    // 如果area不存在，根据类型自动检测位置
     if (!area) {
       if (parsedConfig.type === 'Panel') {
         area = 'leftFloatArea';
@@ -381,6 +395,7 @@ export class Skeleton {
         area = 'leftArea';
       }
     }
+    // 根据不同的area注册到对应的位置上
     switch (area) {
       case 'leftArea':
       case 'left':

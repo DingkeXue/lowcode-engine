@@ -1,3 +1,6 @@
+/**
+ * BASE-RENDER: 渲染器基类，注册一些通用的方式和属性（数据源、样式等）
+ */
 /* eslint-disable no-console */
 /* eslint-disable max-len */
 /* eslint-disable react/prop-types */
@@ -194,6 +197,7 @@ export default function baseRendererFactory(): IBaseRenderComponent {
       }
     }
 
+    // 执行生命周期函数
     __excuteLifeCycleMethod = (method: string, args?: any) => {
       const lifeCycleMethods = getValue(this.props.__schema, 'lifeCycles', {});
       let fn = lifeCycleMethods[method];
@@ -222,6 +226,7 @@ export default function baseRendererFactory(): IBaseRenderComponent {
       return __components[componentName];
     };
 
+    // 将用户自定义的函数绑定this值
     __bindCustomMethods = (props = this.props) => {
       const { __schema } = props;
       const customMethodsList = Object.keys(__schema.methods || {}) || [];
@@ -262,6 +267,7 @@ export default function baseRendererFactory(): IBaseRenderComponent {
       return parseData(data, ctx || __ctx || this, { thisRequiredInJSE });
     };
 
+    // 初始化数据源
     __initDataSource = (props = this.props) => {
       const schema = props.__schema || {};
       const defaultDataSource: DataSource = {
@@ -272,6 +278,9 @@ export default function baseRendererFactory(): IBaseRenderComponent {
       if (props?.__appHelper?.requestHandlersMap) {
         this.__dataHelper = {
           updateConfig: (updateDataSource: any) => {
+            // createDataSourceEngine方法作用：
+            // 1.根据dataSource数组（reduce方法）元素的ID生成dataSourceMap，每一项都是RuntimeDataSourceItem实例（封装了load方法，请求函数处理也是在里面实现的）
+            // 2.返回封装好的重新加载数据方法（创建是加载数据也是在这里执行的 isinit()）
             const { dataSourceMap, reloadDataSource } = createDataSourceEngine(
               updateDataSource ?? {},
               this,
@@ -336,6 +345,7 @@ export default function baseRendererFactory(): IBaseRenderComponent {
       this.setLocale = (loc: string) => this.appHelper?.utils?.i18n?.setLocale && this.appHelper?.utils?.i18n?.setLocale(loc);
     };
 
+    // 注入css样式: 创建style元素，注入innerHTML
     __writeCss = () => {
       const css = getValue(this.props.__schema, 'css', '');
       let style = this.styleElement;
@@ -358,9 +368,17 @@ export default function baseRendererFactory(): IBaseRenderComponent {
       style.innerHTML = css;
     };
 
+    /**
+     * 执行render
+     * 1. 执行render生命周期
+     * 2. 写入css样式
+     * 3. 绑定this
+     * 4. 加载数据源
+     */
     __render = () => {
       const schema = this.props.__schema;
       this.__excuteLifeCycleMethod('render');
+      // 每次渲染的时候注入css
       this.__writeCss();
 
       const { engine } = this.context;
@@ -381,12 +399,16 @@ export default function baseRendererFactory(): IBaseRenderComponent {
       this.__ref = ref;
     };
 
+    // 获取当前节点的children
     getSchemaChildren = (schema: NodeSchema | undefined) => {
+      // 如果schema.props不存在，返回schema?.children，反之
       if (!schema || !schema.props) {
         return schema?.children;
       }
       if (!schema.children) return schema.props.children;
       if (!schema.props.children) return schema.children;
+      // 如果schema?.children和schema.props.children都存在，合并后返回
+      // 优先级: [schema.children, schema.props.children]
       let _children = ([] as NodeData[]).concat(schema.children);
       if (Array.isArray(schema.props.children)) {
         _children = _children.concat(schema.props.children);
@@ -396,6 +418,10 @@ export default function baseRendererFactory(): IBaseRenderComponent {
       return _children;
     };
 
+    /**
+     * 根据当前schema生成子元素
+     * @returns react组件
+     */
     __createDom = () => {
       const { __schema, __ctx, __components = {} } = this.props;
       const scope: any = {};
@@ -403,13 +429,16 @@ export default function baseRendererFactory(): IBaseRenderComponent {
       if (!this._self) {
         this._self = scope;
       }
+      // 获取当前节点的children
       const _children = this.getSchemaChildren(__schema);
+      // 匹配当前元素
       let Comp = __components[__schema.componentName];
 
       if (!Comp) {
         this.__debug(`${__schema.componentName} is invalid!`);
       }
 
+      // 创建元素及其子元素
       return this.__createVirtualDom(_children, scope, ({
         schema: __schema,
         Comp: this.__getHocComp(Comp, __schema, scope),
@@ -896,6 +925,12 @@ export default function baseRendererFactory(): IBaseRenderComponent {
       return Comp;
     }
 
+    /**
+     * Renderer渲染时执行的方法，递归生成组件
+     * @param OriginalComp 跟组件
+     * @param ctxProps ctxProps
+     * @returns react组件
+     */
     __renderComp(OriginalComp: any, ctxProps: object) {
       let Comp = OriginalComp;
       const { __schema } = this.props;
@@ -919,8 +954,9 @@ export default function baseRendererFactory(): IBaseRenderComponent {
         otherProps.__tag = Math.random();
       }
 
+      // 生成组件
       const child = engine.createElement(
-        Comp,
+        Comp, // 当前元素
         {
           ...data,
           ...this.props,
@@ -928,8 +964,8 @@ export default function baseRendererFactory(): IBaseRenderComponent {
           className: classnames(getFileCssName(__schema?.fileName), className, this.props.className),
           __id: __schema?.id,
           ...otherProps,
-        },
-        this.__createDom(),
+        }, // props
+        this.__createDom(), // children
       );
       return this.__renderContextProvider(ctxProps, child);
     }
@@ -946,6 +982,7 @@ export default function baseRendererFactory(): IBaseRenderComponent {
       }, children);
     }
 
+    // schema检查
     __checkSchema = (schema: NodeSchema | undefined, originalExtraComponents: string | string[] = []) => {
       let extraComponents = originalExtraComponents;
       if (typeof extraComponents === 'string') {
@@ -957,26 +994,34 @@ export default function baseRendererFactory(): IBaseRenderComponent {
       return !isSchema(schema) || !componentNames.includes(schema?.componentName ?? '');
     };
 
+    // 直接调用this.xx 直接调用常用的数据
+
+    // 获取requestHandlersMap
     get requestHandlersMap() {
       return this.appHelper?.requestHandlersMap;
     }
 
+    // 获取工具对象
     get utils() {
       return this.appHelper?.utils;
     }
 
+    // 获取constants
     get constants() {
       return this.appHelper?.constants;
     }
 
+    // 获取history
     get history() {
       return this.appHelper?.history;
     }
 
+    // 获取location
     get location() {
       return this.appHelper?.location;
     }
 
+    // 获取match
     get match() {
       return this.appHelper?.match;
     }

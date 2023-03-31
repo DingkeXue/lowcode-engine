@@ -24,6 +24,7 @@ adapter.setRuntime({
   findDOMNode: ReactDOM.findDOMNode,
 });
 
+// 初始化不同的渲染器
 adapter.setRenderers({
   PageRenderer: pageRendererFactory(),
   ComponentRenderer: componentRendererFactory(),

@@ -33,7 +33,7 @@ export default function compFactory(schema, components = {}, componentsMap = {},
         return null;
       }
       const { forwardedRef, ...otherProps } = this.props;
-      // 低代码组件透传应用上下文
+      // 低代码组件透传应用上下文，这是为什么组件可以通过this.xx获取appHelper注册方法的原因
       const ctx = ['utils', 'constants', 'history', 'location', 'match'];
       ctx.forEach(key => {
         if (!appHelper[key] && this.context?.appHelper && this.context?.appHelper[key]) {

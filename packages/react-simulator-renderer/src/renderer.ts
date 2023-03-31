@@ -1,5 +1,6 @@
 import React, { createElement, ReactInstance } from 'react';
 import { render as reactRender } from 'react-dom';
+// const host: BuiltinSimulatorHost = (window as any).LCSimulatorHost;
 import { host } from './host';
 import SimulatorRendererView from './renderer-view';
 import { computed, observable as obx, untracked, makeObservable, configure } from 'mobx';
@@ -30,6 +31,9 @@ import { merge } from 'lodash';
 const loader = new AssetLoader();
 configure({ enforceActions: 'never' });
 
+/**
+ * DocumentInstance文档实例类
+ */
 export class DocumentInstance {
   public instancesMap = new Map<string, ReactInstance[]>();
 
@@ -274,8 +278,10 @@ export class SimulatorRendererContainer implements BuiltinSimulatorRenderer {
         this.buildComponents();
       }
     });
+    // 合并utils
     this._appContext = {
       utils: {
+        // 路由
         router: {
           push(path: string, params?: object) {
             history.push(withQueryParams(path, params));
@@ -284,12 +290,14 @@ export class SimulatorRendererContainer implements BuiltinSimulatorRenderer {
             history.replace(withQueryParams(path, params));
           },
         },
+        // 内置工具getUrlParams
         legaoBuiltins: {
           getUrlParams() {
             const { search } = history.location;
             return parseQuery(search);
           },
         },
+        // i18n
         i18n: {
           setLocale: (loc: string) => {
             this._appContext.utils.i18n.currentLocale = loc;
@@ -298,6 +306,7 @@ export class SimulatorRendererContainer implements BuiltinSimulatorRenderer {
           currentLocale: this.locale,
           messages: {},
         },
+        // 应用层传入的工具
         ...getProjectUtils(this._libraryMap, host.get('utilsMetadata')),
       },
       constants: {},
@@ -426,11 +435,13 @@ export class SimulatorRendererContainer implements BuiltinSimulatorRenderer {
     cursor.release();
   }
 
+  // 创建组件
   createComponent(schema: NodeSchema): Component | null {
     const _schema: any = {
       ...compatibleLegaoSchema(schema),
     };
 
+    // 如果组件名是Component，且有css样式，在body中注入样式
     if (schema.componentName === 'Component' && (schema as ComponentSchema).css) {
       const doc = window.document;
       const s = doc.createElement('style');

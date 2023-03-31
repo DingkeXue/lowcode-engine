@@ -14,10 +14,14 @@ import { ComponentAction, ComponentMetadata } from '@alilc/lowcode-types';
 import { editorSymbol, designerSymbol } from './symbols';
 import ComponentMeta from './component-meta';
 
+/**
+ * 物料抽象类，用于管理物料（底层操作的是editor）
+ */
 export default class Material {
   private readonly [editorSymbol]: Editor;
   private readonly [designerSymbol]: Designer;
 
+  // 初始化editor和designer
   constructor(editor: Editor) {
     this[editorSymbol] = editor;
     this[designerSymbol] = editor.get('designer')!;

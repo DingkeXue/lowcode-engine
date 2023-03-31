@@ -23,6 +23,10 @@ import {
 } from './plugin-types';
 import { isValidPreferenceKey } from './plugin-utils';
 
+/**
+ * 插件上下文类
+ * 初始化各种editor上的属性（project、hotkey等），这样就可以在插件的ctx上下文获取project等属性直接使用
+ */
 export default class PluginContext implements ILowCodePluginContext {
   private readonly [editorSymbol]: Editor;
   private readonly [designerSymbol]: Designer;

@@ -51,6 +51,7 @@ export declare interface Editor extends StrictEventEmitter<EventEmitter, GlobalE
 export class Editor extends (EventEmitter as any) implements IEditor {
   /**
    * Ioc Container
+   * 存储数据的对象
    */
   @obx.shallow private context = new Map<KeyType, any>();
 
@@ -61,27 +62,45 @@ export class Editor extends (EventEmitter as any) implements IEditor {
   // readonly utils = utils;
   /**
    * used to store preferences
-   *
+   * 用于存储用户习惯数据
    * @memberof Editor
    */
   readonly preference = new Preference();
 
   private hooks: HookConfig[] = [];
 
+  /**
+   * 获取context上值的get方法
+   * @param keyOrType keyOrType
+   * @returns 返回对应的值
+   */
   get<T = undefined, KeyOrType = any>(keyOrType: KeyOrType): GetReturnType<T, KeyOrType> | undefined {
     return this.context.get(keyOrType as any);
   }
 
+  /**
+   * 判断context上是否有该属性
+   * @param keyOrType
+   * @returns
+   */
   has(keyOrType: KeyType): boolean {
     return this.context.has(keyOrType);
   }
 
+  /**
+   * 设置context上的值
+   * @param key 需要设置的key
+   * @param data 对应的值
+   * @returns
+   */
   set(key: KeyType, data: any): void {
+    // 如果是资产包，直接调用setAssets方法进行处理
     if (key === 'assets') {
       this.setAssets(data);
       return;
     }
     // store the data to engineConfig while invoking editor.set()
+    // 如果不在白名单内，将值设置到engineConfig上
     if (!keyBlacklist.includes(key as string)) {
       engineConfig.set(key as any, data);
     }
@@ -89,6 +108,13 @@ export class Editor extends (EventEmitter as any) implements IEditor {
     this.notifyGot(key);
   }
 
+  /**
+   * 设置物料资源，Material类进行了封装，在代码中可以直接使用material.setAssets(assets)
+   * 1. 如果assets.components存在，动态加载物料
+   * 2. 更新assets数据
+   * 3. 触发通知
+   * @param assets 静态资源数据
+   */
   async setAssets(assets: AssetsJson) {
     const { components } = assets;
     if (components && components.length) {
@@ -161,6 +187,13 @@ export class Editor extends (EventEmitter as any) implements IEditor {
 
   components?: PluginClassSet;
 
+  /**
+   * 引擎初始化函数
+   * 1.执行
+   * @param config 配置项
+   * @param components 物料map
+   * @returns
+   */
   async init(config?: EditorConfig, components?: PluginClassSet): Promise<any> {
     this.config = config || {};
     this.components = components || {};

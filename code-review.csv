@@ -22,3 +22,7 @@ sha,filename,url,lines,title,comment,priority,category,additional,id,private
 "33c7948a65db6412533beb4cf62c5186cb5699c0","/packages/designer/src/document/history.ts","","11:0-11:38","正在定义前进后退的操作方法","","0","","","81e3fed6-7430-4482-b96a-1144e4fdbf74","0"
 "33c7948a65db6412533beb4cf62c5186cb5699c0","/packages/designer/src/document/history.ts","","43:0-43:23","每次操作都会执行这个函数，记录下操作","","0","","","9c33b121-92fa-4fe2-9617-8ee8dd6f675d","0"
 "33c7948a65db6412533beb4cf62c5186cb5699c0","/packages/editor-skeleton/src/components/field/index.ts","","27:2-27:76","右侧属性生成器文件","","0","","","14ac4e58-6e1f-4a54-a80d-07d6ab926e73","0"
+"e1202e0281f7c5e44f28099c8372fe310a6adb8a","/packages/plugin-designer/src/index.tsx","","26:0-28:17","DesignerPlugin插件","","0","","","3bf3c8bd-e6dc-4851-9b79-17a5661f31f8","0"
+"e1202e0281f7c5e44f28099c8372fe310a6adb8a","/packages/react-simulator-renderer/src/renderer.ts","","277:0-277:14","utils工具处理逻辑","","0","","","551a2ede-c769-4841-b962-8b23ee6bed40","0"
+"e1202e0281f7c5e44f28099c8372fe310a6adb8a","/packages/designer/src/builtin-simulator/host-view.tsx","","21:0-21:37","模拟器（cavas）入口文件","","0","","","dcdedc78-8288-451d-b1c0-673b31f3aa12","0"
+"e1202e0281f7c5e44f28099c8372fe310a6adb8a","/packages/designer/src/builtin-simulator/bem-tools/index.tsx","","13:0-13:39","画布探测组件","","0","","","4725e630-7563-4ef6-93eb-7ea7f85a9697","0"

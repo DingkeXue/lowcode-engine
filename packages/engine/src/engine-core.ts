@@ -158,6 +158,7 @@ export const __SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED = {
             ?.get('outline-pane-pinned-status-isFloat', 'skeleton');
         }
 
+        // 注册大纲插件
         skeleton.add({
           area: 'leftArea',
           name: 'outlinePane',
@@ -207,6 +208,7 @@ export async function init(
   engineInited = true;
   let engineOptions = null;
   let engineContainer = null;
+  // 对入参进行处理，得到最终的container和options
   if (isPlainObject(container)) {
     engineOptions = container;
     engineContainer = document.createElement('div');
@@ -224,6 +226,7 @@ export async function init(
 
   // 依次调用 plugins 数组里的插件进行初始化（packages/designer/src/plugin/plugin-manager.ts/init()）
   await plugins.init(pluginPreference as any);
+  // 挂载组件
   render(
     createElement(Workbench, {
       skeleton: innerSkeleton,

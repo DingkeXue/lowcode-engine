@@ -4,6 +4,9 @@ import { Skeleton } from './skeleton';
 import { IWidget } from './widget/widget';
 import { IWidgetBaseConfig } from './types';
 
+/**
+ * 创建skeleton不同位置的Area类
+ */
 export default class Area<C extends IWidgetBaseConfig = any, T extends IWidget = IWidget> {
   @obx private _visible = true;
 

@@ -16,6 +16,7 @@ export default function rendererFactory(): IRenderComponent {
   const Component = runtime.Component as IGeneralConstructor<IRendererProps, Record<string, any>>;
   const PureComponent = runtime.PureComponent as IGeneralConstructor<IRendererProps, Record<string, any>>;
   const { createElement, findDOMNode } = runtime;
+  // 获取当前适配器下的所有渲染器组件（Page Component Block Addon Temp Div）Renderer
   const RENDERER_COMPS: any = adapter.getRenderers();
   const BaseRenderer = baseRendererFactory();
   const AppContext = contextFactory();
@@ -49,6 +50,7 @@ export default function rendererFactory(): IRenderComponent {
     }
   }
 
+  // 返回react组件，渲染器
   return class Renderer extends Component {
     static dislayName = 'renderer';
 
@@ -56,12 +58,13 @@ export default function rendererFactory(): IRenderComponent {
 
     __ref: any;
 
+    // 默认属性
     static defaultProps: IRendererProps = {
-      appHelper: undefined,
-      components: {},
-      designMode: '',
+      appHelper: undefined, // 组件的appHelper对象（包含utils、dataSourceMap等）
+      components: {}, // 所有物料
+      designMode: '', // 运行模式
       suspended: false,
-      schema: {} as RootSchema,
+      schema: {} as RootSchema, // schema
       onCompGetRef: () => { },
       onCompGetCtx: () => { },
       thisRequiredInJSE: true,
@@ -175,6 +178,7 @@ export default function rendererFactory(): IRenderComponent {
       debug('entry.render');
       const { componentName } = schema;
       const allComponents = { ...RENDERER_COMPS, ...components };
+      // 根据componentName匹配出对应的组件
       let Comp = allComponents[componentName] || RENDERER_COMPS[`${componentName}Renderer`];
       if (Comp && Comp.prototype) {
         if (!(Comp.prototype instanceof BaseRenderer)) {
@@ -182,6 +186,14 @@ export default function rendererFactory(): IRenderComponent {
         }
       }
 
+      // 渲染组件
+      /**
+       * <AppContext.Provider value={}>
+       *  <ConfigProvider device={} locale={}>
+       *    <Comp key='xx' __appHelper={appHelper} __components={allComponents} __schema={schema} />
+       *  </ConfigProvider>
+       * </AppContext.Provider>
+       */
       if (Comp) {
         return createElement(AppContext.Provider, { value: {
           appHelper,
